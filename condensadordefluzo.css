@@ -1,0 +1,10 @@
+body {
+	background: #000000;
+	color: white;
+	text-align: center;
+}
+h1, h2, h3, h4, h5, h6 { font-family: sans-serif; }
+h2 { color: green; background: black; }
+h3 { font-family: monospace, monospace; background: red }
+p { font-family: sans-serif; }
+img { border-radius: 15%; }
