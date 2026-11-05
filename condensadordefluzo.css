@@ -1,10 +1,186 @@
+/* Condensador de fluzo — diseño responsivo con carcasa metálica
+   La página ocupa el alto de la ventana. La carcasa (solo CSS) se
+   dimensiona con unidades de contenedor para ocupar el máximo espacio
+   libre sin deformarse, en escritorio y en móvil. */
+
+:root {
+	--fondo: #000000;        /* prueba también: #1b1d1f (pared gris oscura) */
+	--titulo: red;
+	--metal-claro: #9a9ea3;
+	--metal-medio: #73777c;
+	--metal-oscuro: #50545a;
+	--dymo: #c4161c;
+	--proporcion-caja: 0.787; /* ancho / alto de la carcasa */
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
-	background: #000000;
+	margin: 0;
+	padding: 0 2vw;
+	height: 100vh;
+	height: 100dvh;
+	display: grid;
+	grid-template-rows: auto auto minmax(260px, 1fr) auto;
+	background: var(--fondo);
 	color: white;
 	text-align: center;
 }
+
 h1, h2, h3, h4, h5, h6 { font-family: sans-serif; }
-h2 { color: red; background: black; }
-h3 { font-family: monospace, monospace; background: red }
 p { font-family: sans-serif; }
 img { border-radius: 15%; }
+
+h2 {
+	color: var(--titulo);
+	margin: 0.6em 0 0.3em;
+	font-size: clamp(1.1rem, 1rem + 1vw, 1.6rem);
+}
+
+/* Dock: comportamiento intacto (dock/style.css + Fisheye).
+   Siempre en primer plano: al ampliarse con el efecto lupa
+   los iconos quedan por encima de la carcasa. */
+.dock {
+	position: relative;
+	z-index: 100;
+	margin: 0.2em 0 0.6em;
+}
+
+/* ---------- Zona de la carcasa ---------- */
+.fluzo {
+	display: grid;
+	place-items: center;
+	min-height: 0;
+	container-type: size;     /* permite medir el hueco disponible */
+	text-decoration: none;
+}
+
+.caja {
+	position: relative;
+	width: min(94cqw, 96cqh * var(--proporcion-caja));
+	aspect-ratio: var(--proporcion-caja);
+	container-type: inline-size;  /* los detalles escalan con la caja */
+	border-radius: 3cqw;
+	border: 0.5cqw solid #33363a;
+	background:
+		repeating-linear-gradient(90deg,
+			rgba(255,255,255,.035) 0 1px, rgba(0,0,0,.035) 1px 3px),
+		linear-gradient(160deg,
+			var(--metal-claro) 0%, var(--metal-medio) 45%, var(--metal-oscuro) 100%);
+	box-shadow:
+		inset 0.8cqw 0.8cqw 1.6cqw rgba(255,255,255,.28),
+		inset -0.8cqw -0.8cqw 1.6cqw rgba(0,0,0,.45),
+		0 2cqw 5cqw rgba(0,0,0,.85);
+}
+
+/* Tornillos en las cuatro esquinas */
+.caja::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	--t: radial-gradient(circle, #d4d6d8 0 0.7cqw, #5a5e62 0.9cqw, rgba(0,0,0,.5) 1.2cqw, transparent 1.4cqw);
+	background:
+		var(--t) 3.5% 2.8% / 3cqw 3cqw no-repeat,
+		var(--t) 96.5% 2.8% / 3cqw 3cqw no-repeat,
+		var(--t) 3.5% 97.2% / 3cqw 3cqw no-repeat,
+		var(--t) 96.5% 97.2% / 3cqw 3cqw no-repeat;
+}
+
+/* Bisagras en el lateral derecho */
+.caja::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	right: -2.2cqw;
+	width: 2.6cqw;
+	pointer-events: none;
+	--b: linear-gradient(90deg, #3d4044, var(--metal-claro) 40%, #5b5f64);
+	background:
+		var(--b) 0 22% / 100% 9% no-repeat,
+		var(--b) 0 78% / 100% 9% no-repeat;
+	border-radius: 0.6cqw;
+}
+
+/* Ventana con junta de goma y cristal */
+.ventana {
+	position: absolute;
+	left: 11%;
+	right: 11%;
+	top: 15%;
+	bottom: 6.5%;
+	overflow: hidden;
+	border-radius: 17% / 13%;
+	border: 3.4cqw solid #141516;
+	background: #0b0c0d;
+	box-shadow:
+		0 0 0 0.6cqw #2b2e31,
+		0 0.6cqw 1cqw rgba(255,255,255,.18),
+		inset 0 0 3cqw #000;
+}
+.ventana img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;   /* nunca recorta el dibujo */
+	border-radius: 0;
+}
+.ventana::after {               /* reflejo del cristal */
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background: linear-gradient(125deg,
+		rgba(255,255,255,.16) 0%, rgba(255,255,255,.04) 28%, transparent 40%,
+		transparent 62%, rgba(255,255,255,.07) 72%, transparent 80%);
+}
+
+/* Etiquetas de cinta Dymo */
+.dymo {
+	display: inline-block;
+	margin: 0;
+	padding: 0.45cqw 1.4cqw;
+	background: linear-gradient(var(--dymo), #a20f14);
+	color: #fff;
+	font: bold 2.75cqw/1.15 monospace, monospace;
+	letter-spacing: 0.14em;
+	white-space: nowrap;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.25);
+	border-radius: 0.3cqw;
+	box-shadow: 0 0.3cqw 0.6cqw rgba(0,0,0,.55);
+}
+.avisos {
+	position: absolute;
+	top: 2.4%;
+	left: 0;
+	right: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5cqw;
+	transform: rotate(-0.6deg);
+}
+.ventana .dymo {
+	position: absolute;
+	z-index: 1;
+	left: 50%;
+	top: 71%;
+	transform: translateX(-50%) rotate(-1deg);
+}
+
+/* Móvil en vertical: caja más alta para aprovechar la pantalla */
+@media (orientation: portrait) and (max-width: 600px) {
+	:root { --proporcion-caja: 0.68; }
+}
+
+footer {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: center;
+	gap: 0.3em 1.5em;
+	padding: 0.4em 0;
+}
+footer p { margin: 0.4em 0; }
